@@ -1,0 +1,27 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --background: #f9f7f2; /* 越縁巡り部の和紙のような背景色 */
+  --foreground: #1a1a1a;
+  --koshen-red: #b22d35;  /* Kosh eN のシンボルカラー */
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+  font-family: 'Helvetica Neue', Arial, 'Hiragino Kaku Gothic ProN', 'Hiragino Sans', sans-serif;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Kosh eN 奉納時のボタンアニメーション */
+@keyframes koshen-pulse {
+  0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(178, 45, 53, 0.4); }
+  70% { transform: scale(1.05); box-shadow: 0 0 0 15px rgba(178, 45, 53, 0); }
+  100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(178, 45, 53, 0); }
+}
+
+.animate-koshen {
+  animation: koshen-pulse 2s infinite;
+}
