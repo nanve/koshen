@@ -110,7 +110,7 @@ export default function KoshenApp() {
       {isModalOpen && (
         <div style={{ position: 'fixed', inset: 0, backgroundColor: 'rgba(0,0,0,0.7)', zIndex: 100, display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '20px' }}>
           <div style={{ backgroundColor: '#fffaf0', padding: '30px', borderRadius: '20px', width: '100%', maxWidth: '300px', textAlign: 'center', border: '2px solid #ffd180' }}>
-            <h4 style={{ color: '#d84315', fontWeight: 'bold', marginBottom: '16px' }}>どちらに参拝されましたか？</h4>
+            <h4 style={{ color: '#d84315', fontWeight: 'bold', marginBottom: '16px' }}>参拝されましたか？</h4>
             {candidates.map((c: any, i: number) => (
               <button key={i} onClick={() => processCheckIn(c)} style={{ width: '100%', padding: '12px', marginBottom: '10px', backgroundColor: '#fff', border: '1px solid #ddd', borderRadius: '10px', cursor: 'pointer' }}>
                 {c.shrineName}
