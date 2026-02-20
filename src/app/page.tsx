@@ -87,14 +87,9 @@ export default function KoshenProject() {
     <div className="min-h-screen bg-orange-50 flex flex-col items-center font-sans p-4">
       <header className="py-8 text-center">
         <h1 className="text-3xl font-bold text-orange-600 tracking-tighter">越-縁巡り</h1>
-        <p className="text-orange-400 text-sm mt-1">上越 聖地開拓記録システム</p>
+        <p className="text-orange-400 text-sm mt-1">聖地開拓</p>
       </header>
-
-      {/* 地図エリア */}
-      <div className="w-full max-w-2xl h-[450px] rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white bg-white relative">
-        <MapView markers={markers} />
-      </div>
-
+      
       {/* 輝ボタン */}
       <button 
         onClick={handleKagayaki} 
@@ -103,6 +98,12 @@ export default function KoshenProject() {
       >
         {loading ? "..." : "輝"}
       </button>
+
+
+      {/* 地図エリア */}
+      <div className="w-full max-w-2xl h-[450px] rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white bg-white relative">
+        <MapView markers={markers} />
+      </div>
 
       <footer className="mt-12 flex flex-col items-center space-y-2">
         <div className="px-4 py-1 bg-white rounded-full shadow-sm text-orange-600 font-bold text-sm">
