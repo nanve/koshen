@@ -84,8 +84,8 @@ export default function KoshenProject() {
   return (
     <div className="min-h-screen bg-orange-50 flex flex-col items-center font-sans p-4 pb-20">
       <header className="py-8 text-center shrink-0">
-        <h1 className="text-4xl font-black text-orange-600 tracking-tighter italic">kosh-eN</h1>
-        <p className="text-orange-400 text-sm mt-1 font-bold">越-縁巡り 聖地開拓</p>
+        <h1 className="text-4xl font-black text-orange-600 tracking-tighter italic">越-縁めぐり</h1>
+        <p className="text-orange-400 text-sm mt-1 font-bold">越-縁巡り 聖地に輝きを</p>
       </header>
       
       {/* 操作エリア */}
