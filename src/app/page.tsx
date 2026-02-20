@@ -102,7 +102,7 @@ export default function KoshenProject() {
         </button>
         
         <p className="text-gray-400 text-[20px] mt-6 font-medium">
-          本殿の近くで <span className="text-orange-500 font-bold">輝</span> ボタンを押してください
+          本殿の近くで <span className="text-orange-500 font-bold">輝</span> ボタンを<br>押してください</br>
         </p>
       </div>
 
