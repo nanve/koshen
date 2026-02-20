@@ -91,7 +91,7 @@ export default function KoshenProject() {
       
       {/* 操作エリア */}
       <div className="flex flex-col items-center mb-10 w-full max-w-md bg-white p-6 rounded-[2.5rem] shadow-xl border-2 border-orange-100">
-        <p className="text-orange-600 text-[10px] font-bold mb-4 tracking-widest uppercase">聖地巡礼チェックイン</p>
+        <p className="text-orange-600 text-[20px] font-bold mb-4 tracking-widest uppercase">聖地巡礼チェックイン</p>
         
         <button 
           onClick={handleKagayaki} 
@@ -101,7 +101,7 @@ export default function KoshenProject() {
           {loading ? "..." : "輝"}
         </button>
         
-        <p className="text-gray-400 text-[11px] mt-6 font-medium">
+        <p className="text-gray-400 text-[20px] mt-6 font-medium">
           本殿の近くで <span className="text-orange-500 font-bold">輝</span> ボタンを押してください
         </p>
       </div>
