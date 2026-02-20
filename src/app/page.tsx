@@ -45,23 +45,24 @@ export default function KoshenProject() {
     try {
       const res = await fetch(GAS_URL);
       const data = await res.json();
-      setMarkers(data);
+      // 新しい順に並び替えて保存
+      const sortedData = data.sort((a: any, b: any) => new Date(b.time).getTime() - new Date(a.time).getTime());
+      setMarkers(sortedData);
     } catch (e) { console.error("データ取得失敗", e); }
   };
 
-  // 現在地と登録済み聖地の距離をチェックする
   useEffect(() => {
     fetchMarkers();
     if (navigator.geolocation) {
-      navigator.geolocation.watchPosition((pos) => {
+      const watchId = navigator.geolocation.watchPosition((pos) => {
         const { latitude, longitude } = pos.coords;
-        // 50メートル以内にある聖地を探す
         const nearby = markers.find(m => {
           const dist = Math.sqrt(Math.pow(m.lat - latitude, 2) + Math.pow(m.lng - longitude, 2));
-          return dist < 0.0005; // およそ50メートル
+          return dist < 0.0005; // 約50m以内
         });
         setCurrentSite(nearby ? nearby.name : null);
       });
+      return () => navigator.geolocation.clearWatch(watchId);
     }
   }, [markers.length]);
 
@@ -75,7 +76,7 @@ export default function KoshenProject() {
           method: "POST",
           body: JSON.stringify({ lat: latitude, lng: longitude, alt: altitude, name: currentSite || "新規開拓地" }),
         });
-        fetchMarkers();
+        await fetchMarkers();
       } catch (e) { alert("記録に失敗しました"); }
       finally { setLoading(false); }
     }, (err) => { setLoading(false); }, { enableHighAccuracy: true });
@@ -85,7 +86,7 @@ export default function KoshenProject() {
     <div className="min-h-screen bg-orange-50 flex flex-col items-center font-sans p-4 pb-20">
       <header className="py-8 text-center shrink-0">
         <h1 className="text-4xl font-black text-orange-600 tracking-tighter italic">越-縁めぐり</h1>
-        <p className="text-orange-400 text-sm mt-1 font-bold">越-縁巡り 聖地に輝きを</p>
+        <p className="text-orange-400 text-sm mt-1 font-bold tracking-widest">越-縁巡り 聖地に輝きを</p>
       </header>
       
       {/* 操作エリア */}
@@ -110,27 +111,54 @@ export default function KoshenProject() {
         <MapView markers={markers} />
       </div>
 
-      {/* 参拝記録エリア */}
-      <div className="w-full max-w-2xl mt-8">
-        <div className="flex items-center space-x-2 mb-4">
-          <div className="w-1 h-4 bg-orange-500 rounded-full"></div>
-          <h2 className="text-lg font-bold text-gray-700">参拝記録：</h2>
-        </div>
-        
-        <div className="bg-white/60 backdrop-blur-md rounded-2xl p-4 border border-white min-h-[60px] flex items-center justify-center">
-          {currentSite ? (
-            <p className="text-orange-600 font-bold tracking-wider">【{currentSite}】に参拝中</p>
-          ) : (
-            <p className="text-gray-400 text-xs">まだ参拝記録（登録済み地点）がありません。</p>
-          )}
-        </div>
+      {/* 参拝状況・履歴エリア */}
+      <div className="w-full max-w-2xl mt-8 space-y-6">
+        <section>
+          <div className="flex items-center space-x-2 mb-3">
+            <div className="w-1 h-4 bg-orange-500 rounded-full"></div>
+            <h2 className="text-lg font-bold text-gray-700">参拝記録：</h2>
+          </div>
+          <div className="bg-white/80 backdrop-blur-md rounded-2xl p-4 border border-white flex items-center justify-center min-h-[60px] shadow-sm">
+            {currentSite ? (
+              <p className="text-orange-600 font-black tracking-wider text-lg animate-pulse">【{currentSite}】に参拝中</p>
+            ) : (
+              <p className="text-gray-400 text-xs">周囲に登録済みの聖地はありません。新しい「輝」を掲げましょう。</p>
+            )}
+          </div>
+        </section>
+
+        <section>
+          <div className="flex items-center space-x-2 mb-3">
+            <div className="w-1 h-4 bg-orange-300 rounded-full"></div>
+            <h2 className="text-lg font-bold text-gray-700">これまでの輝き：</h2>
+          </div>
+          <div className="space-y-3">
+            {markers.length > 0 ? (
+              markers.map((m, i) => (
+                <div key={i} className="bg-white p-4 rounded-2xl shadow-sm border border-orange-50 flex justify-between items-center">
+                  <div>
+                    <h3 className="font-bold text-gray-800 text-sm">{m.name}</h3>
+                    <p className="text-[10px] text-gray-400 mt-1">{new Date(m.time).toLocaleString()}</p>
+                  </div>
+                  <div className="text-right">
+                    <span className="text-[10px] font-bold text-orange-400 bg-orange-50 px-2 py-1 rounded-full">
+                      高度: {Math.round(m.alt)}m
+                    </span>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <p className="text-center text-gray-300 py-10 text-xs italic">まだアーカイブされた輝きはありません。</p>
+            )}
+          </div>
+        </section>
       </div>
 
-      <footer className="mt-12 flex flex-col items-center space-y-4">
+      <footer className="mt-16 flex flex-col items-center space-y-4">
         <div className="px-6 py-2 bg-white rounded-full shadow-md text-orange-600 font-bold text-[10px] border border-orange-100 uppercase tracking-[0.2em]">
-          開拓された「輝」: {markers.length} 柱
+          総開拓数: {markers.length} 柱
         </div>
-        <p className="text-orange-200 text-[9px] tracking-[0.3em]">© 47SITESEEING - SACRED SITE SPIRIT CARD</p>
+        <p className="text-orange-200 text-[9px] tracking-[0.3em]">© 47SITESEEING - KOSH-EN PROJECT</p>
       </footer>
     </div>
   );
