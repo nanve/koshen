@@ -3,11 +3,10 @@ import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import "leaflet/dist/leaflet.css";
 
-// ★ 地図コンポーネント：SSRを無効化してブラウザでのみ動かす
+// ★ 地図コンポーネント：PC/スマホの両方で「ページスクロール」を邪魔しない設定
 const MapView = dynamic(
   () => import("react-leaflet").then((mod) => {
     const { MapContainer, TileLayer, Marker, Popup } = mod;
-    // Leaflet本体を読み込んでカスタムアイコンを作成
     const L = require("leaflet");
     const shiningIcon = L.divIcon({
       className: "custom-icon",
@@ -22,7 +21,14 @@ const MapView = dynamic(
 
     return function MapComponent({ markers }: { markers: any[] }) {
       return (
-        <MapContainer center={[37.1479, 138.2363]} zoom={11} style={{ height: "100%", width: "100%" }}>
+        <MapContainer 
+          center={[37.1479, 138.2363]} 
+          zoom={11} 
+          style={{ height: "100%", width: "100%" }}
+          // 指一本でのスクロールを許可し、地図ズームは慎重に行う設定
+          scrollWheelZoom={false}
+          dragging={!L.Browser.mobile} // スマホでは指二本操作を促し、スクロールを優先
+        >
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           {markers.map((m, i) => (
             <Marker key={i} position={[m.lat, m.lng]} icon={shiningIcon}>
@@ -40,7 +46,6 @@ const MapView = dynamic(
   { ssr: false, loading: () => <div className="h-full w-full bg-orange-50 flex items-center justify-center text-orange-400">地図を召喚中...</div> }
 );
 
-// ★ 新しくデプロイした GAS URL をここに貼り付けてください
 const GAS_URL = "https://script.google.com/macros/s/AKfycbxHmdw2RgGyZcaUH8iPfy9CVQrqAe-N-IwpZUkN6VnafwrYrgxAxoHigDmeqlvZeJHEfQ/exec";
 
 export default function KoshenProject() {
@@ -61,7 +66,6 @@ export default function KoshenProject() {
     if (!navigator.geolocation) return alert("GPSが使えません");
     setLoading(true);
 
-    // 偽装防止のため enableHighAccuracy: true を設定
     navigator.geolocation.getCurrentPosition(async (pos) => {
       const { latitude, longitude, altitude } = pos.coords;
       try {
@@ -84,32 +88,36 @@ export default function KoshenProject() {
   };
 
   return (
-    <div className="min-h-screen bg-orange-50 flex flex-col items-center font-sans p-4">
-      <header className="py-8 text-center">
-        <h1 className="text-3xl font-bold text-orange-600 tracking-tighter">越-縁巡り</h1>
-        <p className="text-orange-400 text-sm mt-1">聖地開拓</p>
+    <div className="min-h-screen bg-orange-50 flex flex-col items-center font-sans p-4 pb-20">
+      <header className="py-8 text-center shrink-0">
+        <h1 className="text-4xl font-black text-orange-600 tracking-tighter">越-縁巡り</h1>
+        <p className="text-orange-400 text-sm mt-1 font-bold">上越 聖地開拓記録</p>
       </header>
       
-      {/* 輝ボタン */}
+      {/* 輝ボタン：参拝を最優先に配置 */}
       <button 
         onClick={handleKagayaki} 
         disabled={loading}
-        className={`mt-10 w-28 h-28 rounded-full bg-orange-500 text-white font-black text-2xl shadow-[0_0_30px_rgba(249,115,22,0.4)] active:scale-90 transition-all flex items-center justify-center ${loading ? 'animate-pulse opacity-50' : ''}`}
+        className={`
+          mb-10 w-32 h-32 rounded-full bg-orange-500 text-white font-black text-3xl 
+          shadow-[0_10px_40px_rgba(249,115,22,0.4)] 
+          active:scale-95 transition-all flex items-center justify-center border-4 border-white
+          ${loading ? 'animate-pulse opacity-50' : ''}
+        `}
       >
         {loading ? "..." : "輝"}
       </button>
 
-
-      {/* 地図エリア */}
-      <div className="w-full max-w-2xl h-[450px] rounded-[2rem] overflow-hidden shadow-2xl border-4 border-white bg-white relative">
+      {/* 地図エリア：PCで見やすく、スマホでスクロールを邪魔しないサイズ */}
+      <div className="w-full max-w-2xl h-[450px] rounded-[2.5rem] overflow-hidden shadow-2xl border-4 border-white bg-white relative shrink-0">
         <MapView markers={markers} />
       </div>
 
-      <footer className="mt-12 flex flex-col items-center space-y-2">
-        <div className="px-4 py-1 bg-white rounded-full shadow-sm text-orange-600 font-bold text-sm">
+      <footer className="mt-12 flex flex-col items-center space-y-4">
+        <div className="px-6 py-2 bg-white rounded-full shadow-md text-orange-600 font-bold text-sm border border-orange-100">
           現在開拓された「輝」: {markers.length} 柱
         </div>
-        <p className="text-orange-200 text-[10px]">© Koshen Project - Sacred Site Spirit Card</p>
+        <p className="text-orange-200 text-[10px] tracking-widest">© Koshen Project - Sacred Site Spirit Card</p>
       </footer>
     </div>
   );
